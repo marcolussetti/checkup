@@ -73,6 +73,7 @@ func (c ICMPChecker) doChecks() Attempts {
 		pinger.AddIPAddr(ra)
 		pinger.OnRecv = func(addr *net.IPAddr, rtt time.Duration) {
 			// fmt.Printf("IP Addr: %s receive, RTT: %v\n", addr.String(), rtt)
+			checks[i].RTT = rtt
 		}
 		pinger.OnIdle = func() {
 			// fmt.Println("finish")
@@ -80,9 +81,8 @@ func (c ICMPChecker) doChecks() Attempts {
 
 		err = pinger.Run()
 
-		checks[i].RTT = time.Since(start)
-
 		if err != nil {
+			checks[i].RTT = time.Since(start)
 			checks[i].Error = err.Error()
 			continue
 		}
