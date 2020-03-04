@@ -2,7 +2,6 @@ package checkup
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net"
 	"time"
 
@@ -51,7 +50,7 @@ func (c ICMPChecker) Check() (Result, error) {
 func (c ICMPChecker) doChecks() Attempts {
 	var err error
 
-	var pinger := fastping.NewPinger()
+	pinger := fastping.NewPinger()
 
 	timeout := c.Timeout
 	if timeout == 0 {
@@ -63,7 +62,7 @@ func (c ICMPChecker) doChecks() Attempts {
 		start := time.Now()
 
 		// can it resolve at all?
-		var ra, resolveErr := net.ResolveIPAddr("ip4:icmp", c.URL)
+		ra, resolveErr := net.ResolveIPAddr("ip4:icmp", c.URL)
 
 		if resolveErr != nil {
 			checks[i].Error = resolveErr.Error()
@@ -72,14 +71,14 @@ func (c ICMPChecker) doChecks() Attempts {
 		}
 
 		pinger.AddIPAddr(ra)
-		p.OnRecv = func(addr *net.IPAddr, rtt time.Duration) {
+		pinger.OnRecv = func(addr *net.IPAddr, rtt time.Duration) {
 			// fmt.Printf("IP Addr: %s receive, RTT: %v\n", addr.String(), rtt)
 		}
-		p.OnIdle = func() {
+		pinger.OnIdle = func() {
 			// fmt.Println("finish")
 		}
 
-		err = p.Run()
+		err = pinger.Run()
 
 		checks[i].RTT = time.Since(start)
 
