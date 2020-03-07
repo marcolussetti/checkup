@@ -105,7 +105,7 @@ func (c ICMPChecker) conclude(result Result) Result {
 
 	// Check errors (down)
 	for i := range result.Times {
-		if result.Times[i].Error != "" {
+		if result.Times[i].Error != "" || result.Times[i].RTT == 0 {
 			result.Down = true
 			return result
 		}
