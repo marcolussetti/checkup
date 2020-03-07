@@ -90,7 +90,7 @@ func (c ICMPChecker) doChecks() Attempts {
 		}
 		if !didRespond {
 			checks[i].RTT = time.Since(start)
-			checks[i].Error = errors.new("Did not answer pings.")
+			checks[i].Error = errors.New("Did not answer pings.")
 			continue
 		}
 	}
