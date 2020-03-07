@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net"
 	"time"
-
+	"errors"
 	"github.com/tatsushid/go-fastping"
 )
 
@@ -83,9 +83,14 @@ func (c ICMPChecker) doChecks() Attempts {
 
 		err = pinger.Run()
 
-		if err != nil || !didRespond {
+		if err != nil {
 			checks[i].RTT = time.Since(start)
 			checks[i].Error = err.Error()
+			continue
+		}
+		if !didRespond {
+			checks[i].RTT = time.Since(start)
+			checks[i].Error = errors.new("Did not answer pings.")
 			continue
 		}
 	}
