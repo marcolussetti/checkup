@@ -49,6 +49,7 @@ func (c ICMPChecker) Check() (Result, error) {
 // doChecks executes and returns each attempt.
 func (c ICMPChecker) doChecks() Attempts {
 	var err error
+	var didRespond bool = false
 
 	pinger := fastping.NewPinger()
 
@@ -74,6 +75,7 @@ func (c ICMPChecker) doChecks() Attempts {
 		pinger.OnRecv = func(addr *net.IPAddr, rtt time.Duration) {
 			// fmt.Printf("IP Addr: %s receive, RTT: %v\n", addr.String(), rtt)
 			checks[i].RTT = rtt
+			didRespond = true
 		}
 		pinger.OnIdle = func() {
 			// fmt.Println("finish")
@@ -81,7 +83,7 @@ func (c ICMPChecker) doChecks() Attempts {
 
 		err = pinger.Run()
 
-		if err != nil {
+		if err != nil || !didRespond {
 			checks[i].RTT = time.Since(start)
 			checks[i].Error = err.Error()
 			continue
