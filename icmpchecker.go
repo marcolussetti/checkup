@@ -87,8 +87,13 @@ func (c ICMPChecker) doChecks() Attempts {
 			checks[i].Error = err.Error()
 			continue
 		}
-		if !didRespond {
+		if !didRespond  {
 			checks[i].RTT = time.Since(start)
+			checks[i].Error = "Did not answer pings."
+			continue
+		}
+
+		if checks[i].RTT == 0 {
 			checks[i].Error = "Did not answer pings."
 			continue
 		}
@@ -105,7 +110,11 @@ func (c ICMPChecker) conclude(result Result) Result {
 
 	// Check errors (down)
 	for i := range result.Times {
-		if result.Times[i].Error != "" || result.Times[i].RTT == 0 {
+		if result.Times[i].Error != ""{
+			result.Down = true
+			return result
+		}
+		if result.Times[i].RTT == 0 {
 			result.Down = true
 			return result
 		}
